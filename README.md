@@ -1,54 +1,94 @@
-# shop
+# Shop
 
-A simple online shop project built with Django — a base e-commerce application that lets you manage products, media, and storefront logic.
+An online shop prototype built with Django 5.1 on top of Colorlib's **Karma Shop** HTML template. Categories and products are managed in the Django admin and rendered on the storefront home page and category pages. The cart and checkout flow is still being built.
 
-## 🧰 Features
+## Status
 
-- Product catalog management (via `products/` app)  
-- Media handling (product images and other uploads)  
-- Simple project structure ready to extend  
-- Uses SQLite for development (file `db.sqlite3`)  
+Work in progress (learning project).
 
-## 📦 Tech Stack
+- **Works:** catalog management in the admin, the home page "Latest Products" block (8 random products from the database), category product pages, image uploads.
+- **Partial:** `/add_to_cart/<id>/` stores product IDs in the session, but the cart page does not display them yet.
+- **Not implemented yet:** real product detail pages, checkout and order processing, user sign-up and login. The product, cart, checkout, confirmation, contact and login pages are still static template pages.
+- The home page picks 8 random products, so the database must contain at least 8 products. The bundled sample database already has 8.
 
-- Python + Django  
-- HTML / CSS / SCSS / JavaScript for frontend  
-- SQLite (default DB for development)  
-- Django static/media file support  
+## Features
 
-## 🚀 Getting Started
+- Catalog models: `Category` (with image), `Subcategory`, `Product` (price, availability, description, image), extra product images and video links, plus `ProductReview`, `Order` and `OrderProduct` models for upcoming features
+- Django admin with inline product images and videos, and category search
+- Storefront pages based on the Karma template: home, category listing, cart, checkout, confirmation, contact
+- Session-based add-to-cart endpoint
+- Uploaded media served by Django in development
+
+## Tech stack
+
+- Python 3.10+, Django 5.1
+- Pillow (for `ImageField`)
+- SQLite
+- Front end: Karma Shop template (Bootstrap, jQuery, Owl Carousel, SCSS)
+
+## Getting started
 
 ### Prerequisites
 
-- Python 3.x  
-- pip (or another package manager)  
+- Python 3.10 or newer
+- pip
 
-### Installation & Run (development)
+### Installation
 
 ```bash
-git clone https://github.com/A1isherDev/shop.git
+git clone https://github.com/Viltrumlik/shop.git
 cd shop
-# (optional) create and activate virtualenv  
-pip install -r requirements.txt   # if you add one  
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install "Django>=5.1,<5.2" Pillow
+```
+
+There is no `requirements.txt` yet; Django and Pillow are the only third-party packages the code uses.
+
+### Configuration
+
+All settings are in `market/settings.py` (no environment variables). It is configured for local development only (`DEBUG = True`, a hard-coded development `SECRET_KEY`). Before deploying anywhere public, set your own secret key, `DEBUG = False` and `ALLOWED_HOSTS`.
+
+### Run
+
+```bash
 python manage.py migrate
+python manage.py createsuperuser   # to log in to the admin
 python manage.py runserver
-````
+```
 
-Then open your browser at `http://127.0.0.1:8000/`
+Open http://127.0.0.1:8000/ for the store and http://127.0.0.1:8000/admin/ to manage categories and products.
 
-### (Optional) Admin & Product Management
+## Usage
 
-You can use Django’s admin to add products, manage media files, and configure the catalogue.
+| URL                      | What it does                                         |
+|--------------------------|------------------------------------------------------|
+| `/`                      | Home page with banners and 8 random products         |
+| `/category/<id>/`        | Products of one category, with subcategory links     |
+| `/add_to_cart/<id>/`     | Adds a product to the session cart, redirects to cart |
+| `/cart/`                 | Cart page (template only for now)                    |
+| `/checkout/`, `/confirmation/`, `/contact/` | Template pages                    |
+| `/admin/`                | Django admin                                         |
 
-## 🧪 (Future) To-Do / TODOs
+## Project structure
 
-* Add user authentication (signup / login / cart)
-* Add shopping-cart & checkout functionality
-* Switch to production-ready database (e.g. PostgreSQL)
-* Add tests & coverage
-* Add CI/CD and environment configs (e.g. `.env`, Docker)
+```text
+shop/
+├── manage.py
+├── market/              # Django project: settings, root URLs, WSGI/ASGI
+├── shop/                # main app
+│   ├── models.py        # Category, Subcategory, Product, Order, ...
+│   ├── views.py
+│   ├── admin.py
+│   ├── urls.py
+│   └── templates/       # pages and components/ from the Karma template
+├── staticfiles/         # template CSS, SCSS, JS and images (STATICFILES_DIRS)
+├── media/               # uploaded category and product images
+└── db.sqlite3           # sample SQLite database
+```
 
-## 🤝 Contributing
+## License
 
-Feel free to fork, suggest improvements or add features via pull requests. Please follow standard Django coding style and keep code clean.
----
+The project code is released under the [MIT License](LICENSE).
+
+The front-end theme is the Karma Shop template by [Colorlib](https://colorlib.com), licensed under CC BY 3.0; keep the Colorlib credit in the footer.
